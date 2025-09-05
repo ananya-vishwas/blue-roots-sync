@@ -1,14 +1,50 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import Login from "@/components/Login";
+import Dashboard from "@/components/Dashboard";
+import DataCapture from "@/components/DataCapture";
 
 const Index = () => {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
-  );
+  const [currentView, setCurrentView] = useState<"login" | "dashboard" | "capture">("login");
+  const [user, setUser] = useState<{ type: string; phone: string } | null>(null);
+
+  const handleLogin = (userType: string, phone: string) => {
+    setUser({ type: userType, phone });
+    setCurrentView("dashboard");
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    setCurrentView("login");
+  };
+
+  const handleCapture = () => {
+    setCurrentView("capture");
+  };
+
+  const handleBackToDashboard = () => {
+    setCurrentView("dashboard");
+  };
+
+  if (currentView === "login") {
+    return <Login onLogin={handleLogin} />;
+  }
+
+  if (currentView === "capture" && user) {
+    return <DataCapture onBack={handleBackToDashboard} userType={user.type} />;
+  }
+
+  if (currentView === "dashboard" && user) {
+    return (
+      <Dashboard 
+        userType={user.type}
+        phoneNumber={user.phone}
+        onCapture={handleCapture}
+        onLogout={handleLogout}
+      />
+    );
+  }
+
+  return <Login onLogin={handleLogin} />;
 };
 
 export default Index;
