@@ -6,6 +6,7 @@ import DataCapture from "@/components/DataCapture";
 const Index = () => {
   const [currentView, setCurrentView] = useState<"login" | "dashboard" | "capture">("login");
   const [user, setUser] = useState<{ type: string; phone: string } | null>(null);
+  const [historyEntries, setHistoryEntries] = useState<Array<{ plantName: string; location: string }>>([]);
 
   const handleLogin = (userType: string, phone: string) => {
     setUser({ type: userType, phone });
@@ -25,12 +26,17 @@ const Index = () => {
     setCurrentView("dashboard");
   };
 
+  const handleSubmissionComplete = (data: { plantName: string; location: string }) => {
+    setHistoryEntries(prev => [data, ...prev]);
+    setCurrentView("dashboard");
+  };
+
   if (currentView === "login") {
     return <Login onLogin={handleLogin} />;
   }
 
   if (currentView === "capture" && user) {
-    return <DataCapture onBack={handleBackToDashboard} userType={user.type} />;
+    return <DataCapture onBack={handleBackToDashboard} userType={user.type} onSubmissionComplete={handleSubmissionComplete} />;
   }
 
   if (currentView === "dashboard" && user) {
@@ -40,6 +46,7 @@ const Index = () => {
         phoneNumber={user.phone}
         onCapture={handleCapture}
         onLogout={handleLogout}
+        historyEntries={historyEntries}
       />
     );
   }

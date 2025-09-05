@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -23,9 +23,11 @@ interface DashboardProps {
   phoneNumber: string;
   onCapture: () => void;
   onLogout: () => void;
+  onAddHistoryEntry?: (entry: { plantName: string; location: string }) => void;
+  historyEntries?: Array<{ plantName: string; location: string }>;
 }
 
-const Dashboard = ({ userType, phoneNumber, onCapture, onLogout }: DashboardProps) => {
+const Dashboard = ({ userType, phoneNumber, onCapture, onLogout, onAddHistoryEntry, historyEntries: externalHistoryEntries }: DashboardProps) => {
   const [activeTab, setActiveTab] = useState("overview");
   const [historyEntries, setHistoryEntries] = useState([
     {
@@ -43,6 +45,27 @@ const Dashboard = ({ userType, phoneNumber, onCapture, onLogout }: DashboardProp
       location: "Coastal Strip B2"
     }
   ]);
+
+  // Convert external history entries to internal format
+  useEffect(() => {
+    if (externalHistoryEntries && externalHistoryEntries.length > 0) {
+      const convertedEntries = externalHistoryEntries.map((entry, index) => ({
+        id: Date.now() - index,
+        plantName: entry.plantName,
+        timestamp: new Date().toLocaleDateString('en-US', { 
+          weekday: 'short', 
+          month: 'short', 
+          day: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        }),
+        status: "pending" as const,
+        location: entry.location
+      }));
+      setHistoryEntries(prev => [...convertedEntries, ...prev]);
+    }
+  }, [externalHistoryEntries]);
 
   const userIcons = {
     farmer: Leaf,
