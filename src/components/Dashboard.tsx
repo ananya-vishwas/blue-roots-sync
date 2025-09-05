@@ -27,6 +27,22 @@ interface DashboardProps {
 
 const Dashboard = ({ userType, phoneNumber, onCapture, onLogout }: DashboardProps) => {
   const [activeTab, setActiveTab] = useState("overview");
+  const [historyEntries, setHistoryEntries] = useState([
+    {
+      id: 1,
+      plantName: "Rhizophora mucronata",
+      timestamp: "Today, 2:30 PM",
+      status: "pending",
+      location: "Mangrove Area A1"
+    },
+    {
+      id: 2,
+      plantName: "Avicennia marina", 
+      timestamp: "Yesterday, 4:15 PM",
+      status: "pending",
+      location: "Coastal Strip B2"
+    }
+  ]);
 
   const userIcons = {
     farmer: Leaf,
@@ -119,6 +135,28 @@ const Dashboard = ({ userType, phoneNumber, onCapture, onLogout }: DashboardProp
       </div>
 
       <div className="container mx-auto px-4 py-6 space-y-6">
+        {/* Tab Navigation */}
+        <div className="flex space-x-1 bg-muted p-1 rounded-lg">
+          <Button
+            variant={activeTab === "overview" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("overview")}
+            className="flex-1"
+          >
+            Overview
+          </Button>
+          <Button
+            variant={activeTab === "history" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("history")}
+            className="flex-1"
+          >
+            History
+          </Button>
+        </div>
+
+        {activeTab === "overview" && (
+          <>
         {/* Quick Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card className="shadow-card border-0">
@@ -257,6 +295,43 @@ const Dashboard = ({ userType, phoneNumber, onCapture, onLogout }: DashboardProp
             </div>
           </CardContent>
         </Card>
+          </>
+        )}
+
+        {activeTab === "history" && (
+          <Card className="shadow-card border-0">
+            <CardHeader>
+              <CardTitle>Capture History</CardTitle>
+              <CardDescription>All your data capture submissions</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {historyEntries.map((entry) => (
+                <div 
+                  key={entry.id}
+                  className="flex items-start space-x-4 p-4 rounded-lg border border-border hover:shadow-soft transition-shadow"
+                >
+                  <div className="w-12 h-12 bg-gradient-forest rounded-lg flex items-center justify-center flex-shrink-0">
+                    <TreePine className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-1">
+                      <h4 className="font-medium text-foreground">{entry.plantName}</h4>
+                      <Badge className="bg-muted text-muted-foreground">
+                        <AlertCircle className="h-3 w-3 mr-1" />
+                        {entry.status}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-1">{entry.location}</p>
+                    <div className="flex items-center text-xs text-muted-foreground">
+                      <Clock className="h-3 w-3 mr-1" />
+                      {entry.timestamp}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
