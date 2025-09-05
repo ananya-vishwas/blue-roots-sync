@@ -22,10 +22,9 @@ import { useToast } from "@/hooks/use-toast";
 interface DataCaptureProps {
   onBack: () => void;
   userType: string;
-  onSubmissionComplete?: (data: { plantName: string; location: string }) => void;
 }
 
-const DataCapture = ({ onBack, userType, onSubmissionComplete }: DataCaptureProps) => {
+const DataCapture = ({ onBack, userType }: DataCaptureProps) => {
   const [capturedImage, setCapturedImage] = useState<string>("");
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [submissionStatus, setSubmissionStatus] = useState<"idle" | "uploading" | "queued" | "submitted">("idle");
@@ -109,14 +108,6 @@ const DataCapture = ({ onBack, userType, onSubmissionComplete }: DataCaptureProp
         toast({
           title: "Queued for Upload", 
           description: "Will sync when internet connection is restored"
-        });
-      }
-      
-      // Add to history
-      if (onSubmissionComplete) {
-        onSubmissionComplete({
-          plantName: formData.plantSpecies,
-          location: formData.location || "Location not specified"
         });
       }
     }, 2000);
